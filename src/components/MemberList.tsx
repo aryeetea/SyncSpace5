@@ -31,7 +31,7 @@ export function MemberList({ members, currentUserId }: MemberListProps) {
               }`}
             >
               {/* Anime avatar */}
-              <AnimeAvatar name={member.name} size="md" className="flex-shrink-0" />
+              <AnimeAvatar name={member.name} size="md" className="shrink-0" />
               
               {/* Name label */}
               <div className="flex-1 min-w-0">
@@ -47,7 +47,7 @@ export function MemberList({ members, currentUserId }: MemberListProps) {
           
           {members.length === 0 && (
             <div className="text-center py-8">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-400/20 to-slate-500/20 flex items-center justify-center mx-auto mb-3">
+              <div className="w-12 h-12 rounded-full bg-linear-to-br from-slate-400/20 to-slate-500/20 flex items-center justify-center mx-auto mb-3">
                 <Users className="w-6 h-6 text-slate-400/40" />
               </div>
               <p className="hangyaku-font text-slate-400/60 text-sm">no members yet</p>

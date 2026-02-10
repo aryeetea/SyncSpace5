@@ -2,7 +2,7 @@ export type AvailabilityStatus = 'available' | 'busy' | 'unavailable' | 'remote'
 
 export interface TimeBlock {
   hour: number;
-  minute: number; // 0, 15, 30, or 45
+  minute: number; // 0 or 30
   status: AvailabilityStatus | null;
 }
 
@@ -30,10 +30,11 @@ export interface Group {
   members: Member[];
 }
 
-// Time slots from 8 AM to 11 PM in 15-minute intervals
-export const TIME_SLOTS = Array.from({ length: 64 }, (_, i) => ({
-  hour: Math.floor(i / 4) + 8,
-  minute: (i % 4) * 15
+// Time slots from 8 AM to 11 PM in 30-minute intervals
+// 8:00 ... 23:30 (32 slots)
+export const TIME_SLOTS = Array.from({ length: 32 }, (_, i) => ({
+  hour: Math.floor(i / 2) + 8,
+  minute: (i % 2) * 30
 }));
 
 export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

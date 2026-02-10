@@ -116,7 +116,9 @@ export function GroupRoom({ groupName, groupCode, userName, memberId, onBack }: 
     const savedTemplate = localStorage.getItem(`lastWeek_${memberId}`);
     if (savedTemplate) setLastWeekTemplate(JSON.parse(savedTemplate));
 
-    const interval = setInterval(fetchGroupData, 5000);
+    // Poll for updates (keeps everyone in sync without needing realtime subscriptions)
+    // 10s is a good balance for groups (reduces network + re-renders vs 5s)
+    const interval = setInterval(fetchGroupData, 10000);
     return () => clearInterval(interval);
   }, [groupCode]);
 
@@ -396,75 +398,90 @@ export function GroupRoom({ groupName, groupCode, userName, memberId, onBack }: 
               <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-8 flex-1">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-emerald-400/70 animate-gentle-pulse" />
-                  {/* ✅ text now matches */}
                   <span className="hangyaku-font text-sm text-emerald-300/90">available (in person)</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full bg-blue-400/70 animate-gentle-pulse"
-                    style={{ animationDelay: '0.3s' }}
-                  />
-                  {/* ✅ text now matches */}
+                  <div className="w-3 h-3 rounded-full bg-blue-400/70 animate-gentle-pulse" style={{ animationDelay: '0.3s' }} />
                   <span className="hangyaku-font text-sm text-blue-300/90">available (remote)</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full bg-rose-400/70 animate-gentle-pulse"
-                    style={{ animationDelay: '0.6s' }}
-                  />
-                  {/* ✅ text now matches */}
+                  <div className="w-3 h-3 rounded-full bg-rose-400/70 animate-gentle-pulse" style={{ animationDelay: '0.6s' }} />
                   <span className="hangyaku-font text-sm text-rose-300/90">busy</span>
                 </div>
               </div>
 
-              {/* ✅ Paint mode buttons updated (no more “empty squares”) */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActivePaintMode('available')}
-                  aria-pressed={activePaintMode === 'available'}
+              {/* ✅ Paint mode buttons (now self-explanatory) */}
+              <div className="flex items-center gap-3">
+                <span className="hangyaku-font text-xs text-slate-400/80">paint:</span>
+                <span
                   className={[
-                    'h-9 w-9 rounded-full border transition-all duration-200 flex items-center justify-center',
-                    'backdrop-blur-md',
+                    'hangyaku-font text-xs font-medium capitalize',
                     activePaintMode === 'available'
-                      ? 'border-emerald-400/70 bg-emerald-400/18 shadow-[0_0_18px_rgba(52,211,153,0.18)] ring-2 ring-emerald-400/20'
-                      : 'border-emerald-400/35 bg-emerald-400/10 hover:bg-emerald-400/14 hover:border-emerald-400/55',
+                      ? 'text-emerald-300/90'
+                      : activePaintMode === 'remote'
+                      ? 'text-blue-300/90'
+                      : activePaintMode === 'busy'
+                      ? 'text-rose-300/90'
+                      : 'text-slate-300/80'
                   ].join(' ')}
-                  title="Available (In Person)"
                 >
-                  <span className="w-3 h-3 block rounded-full bg-emerald-400" />
-                </button>
+                  {activePaintMode === 'available'
+                    ? 'in person'
+                    : activePaintMode === 'remote'
+                    ? 'remote'
+                    : activePaintMode === 'busy'
+                    ? 'busy'
+                    : 'off'}
+                </span>
 
-                <button
-                  onClick={() => setActivePaintMode('remote')}
-                  aria-pressed={activePaintMode === 'remote'}
-                  className={[
-                    'h-9 w-9 rounded-full border transition-all duration-200 flex items-center justify-center',
-                    'backdrop-blur-md',
-                    activePaintMode === 'remote'
-                      ? 'border-blue-400/70 bg-blue-400/18 shadow-[0_0_18px_rgba(96,165,250,0.18)] ring-2 ring-blue-400/20'
-                      : 'border-blue-400/35 bg-blue-400/10 hover:bg-blue-400/14 hover:border-blue-400/55',
-                  ].join(' ')}
-                  title="Available (Remote)"
-                >
-                  <span className="w-3 h-3 block rounded-full bg-blue-400" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setActivePaintMode('available')}
+                    aria-pressed={activePaintMode === 'available'}
+                    className={[
+                      'h-9 w-9 rounded-full border transition-all duration-200 flex items-center justify-center',
+                      'backdrop-blur-md',
+                      activePaintMode === 'available'
+                        ? 'border-emerald-400/70 bg-emerald-400/18 shadow-[0_0_18px_rgba(52,211,153,0.18)] ring-2 ring-emerald-400/20'
+                        : 'border-emerald-400/35 bg-emerald-400/10 hover:bg-emerald-400/14 hover:border-emerald-400/55'
+                    ].join(' ')}
+                    title="Available (In Person)"
+                  >
+                    <span className="w-3 h-3 block rounded-full bg-emerald-400" />
+                  </button>
 
-                <button
-                  onClick={() => setActivePaintMode('busy')}
-                  aria-pressed={activePaintMode === 'busy'}
-                  className={[
-                    'h-9 w-9 rounded-full border transition-all duration-200 flex items-center justify-center',
-                    'backdrop-blur-md',
-                    activePaintMode === 'busy'
-                      ? 'border-rose-400/70 bg-rose-400/18 shadow-[0_0_18px_rgba(251,113,133,0.18)] ring-2 ring-rose-400/20'
-                      : 'border-rose-400/35 bg-rose-400/10 hover:bg-rose-400/14 hover:border-rose-400/55',
-                  ].join(' ')}
-                  title="Busy"
-                >
-                  <span className="w-3 h-3 block rounded-full bg-rose-400" />
-                </button>
+                  <button
+                    onClick={() => setActivePaintMode('remote')}
+                    aria-pressed={activePaintMode === 'remote'}
+                    className={[
+                      'h-9 w-9 rounded-full border transition-all duration-200 flex items-center justify-center',
+                      'backdrop-blur-md',
+                      activePaintMode === 'remote'
+                        ? 'border-blue-400/70 bg-blue-400/18 shadow-[0_0_18px_rgba(96,165,250,0.18)] ring-2 ring-blue-400/20'
+                        : 'border-blue-400/35 bg-blue-400/10 hover:bg-blue-400/14 hover:border-blue-400/55'
+                    ].join(' ')}
+                    title="Available (Remote)"
+                  >
+                    <span className="w-3 h-3 block rounded-full bg-blue-400" />
+                  </button>
+
+                  <button
+                    onClick={() => setActivePaintMode('busy')}
+                    aria-pressed={activePaintMode === 'busy'}
+                    className={[
+                      'h-9 w-9 rounded-full border transition-all duration-200 flex items-center justify-center',
+                      'backdrop-blur-md',
+                      activePaintMode === 'busy'
+                        ? 'border-rose-400/70 bg-rose-400/18 shadow-[0_0_18px_rgba(251,113,133,0.18)] ring-2 ring-rose-400/20'
+                        : 'border-rose-400/35 bg-rose-400/10 hover:bg-rose-400/14 hover:border-rose-400/55'
+                    ].join(' ')}
+                    title="Busy"
+                  >
+                    <span className="w-3 h-3 block rounded-full bg-rose-400" />
+                  </button>
+                </div>
               </div>
 
               {lastWeekTemplate && (
